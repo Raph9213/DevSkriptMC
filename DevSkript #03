@@ -1,0 +1,39 @@
+options:
+    bypassperm: disable.bypass
+#   Mettre la permission pour utilisé les commandes bloquées.
+    adminperm: disable.admin
+#   Mettre la permission pour utilisé la commande /disable, /enable.
+
+command /disable [<text>]:
+    aliases: /disablecommand
+    permission: {@adminperm}
+    permission message: &cVous n'avez pas la permission d'utilisé cette commande.
+    trigger:
+        if arg 1 is not set:
+            send "&cErreur: Merci d'utilisé /disable [commande] (Merci de le mettre sans slash, ou juste un slash pour les commande WorldEdit)"
+        if arg 1 is set:
+            set {disablecommand::%arg 1%} to true
+            send "&aRéussi: La commande /%arg 1% &aà été bloqué pour les joueurs."
+
+command /enable [<text>]:
+    aliases: /enablecommand
+    permission: {@adminperm}
+    permission message: &cVous n'avez pas la permission d'utilisé cette commande.
+    trigger:
+        if arg 1 is not set:
+            send "&cErreur: Merci d'utilisé /enable [commande] (Merci de le mettre sans slash, ou juste un slash pour les commande WorldEdit)"
+        if arg 1 is set:
+            if arg 1 is "all":
+                delete {disablecommand::*}
+                send "&cVous venez de supprimé toutes les commandes bloquées."
+            else:
+                delete {disablecommand::%arg 1%}
+                send "&aRéussi: La commande /%arg 1% &aà été débloquée pour les joueurs."
+
+on command:
+    if {disablecommand::%command%} is set:
+        if player doesn't have permission "{@bypassperm}":
+            cancel event
+            send "&cCette commande est bloqué !"
+        else:
+            send "&c/%command%: Vous avez bypass la protection !"
